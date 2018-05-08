@@ -36,13 +36,14 @@ public class UserRepositoryTest {
         user.setAccountStatus(AccountStatus.NEW);
     }
 
-    @Ignore
     @Test
     public void shouldFindNoUsersIfRepositoryIsEmpty() {
-
+        //repository.deleteAll();
         List<User> users = repository.findAll();
-
-        Assert.assertThat(users, Matchers.hasSize(0));
+                //Przed uruchomieniem testu tworzymy nowego uzytkownika, wiec albo na poczatku czyscimy cala liste,
+                // albo uwzgledniamy go i nowe repozytorium powinno miec wtedy jednego, a nie zero userow.
+        Assert.assertThat(users, Matchers.hasSize(1));
+        //Assert.assertThat(users, Matchers.hasSize(0));
     }
 
     @Ignore
