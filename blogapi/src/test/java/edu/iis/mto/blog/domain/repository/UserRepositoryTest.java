@@ -77,13 +77,8 @@ public class UserRepositoryTest {
         entityManager.persist(user);
         entityManager.persist(jan);
         List<User> users = repository.findAll();
-        List<User> testers = new ArrayList<>();
+        List<User> testers = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("Jan","notExisting","notExisting");
 
-        for(User user : users){
-            if(user.getFirstName().equalsIgnoreCase("jan")){
-                testers.add(user);
-            }
-        }
         Assert.assertThat(testers.size(),Matchers.is(2));
     }
 
@@ -91,12 +86,8 @@ public class UserRepositoryTest {
     public void shouldNotFindAnyUser(){
         entityManager.persist(user);
         List<User> users = repository.findAll();
-        List<User> testers = new ArrayList<>();
-        for(User user : users){
-            if(user.getEmail().equalsIgnoreCase("testowyuser01@domena.ork")){
-                testers.add(user);
-            }
-        }
+        List<User> testers = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase("notExisting","notExisting","notExisting");
+
         Assert.assertThat(testers.size(),Matchers.is(0));
     }
 
