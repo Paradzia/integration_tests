@@ -16,6 +16,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import edu.iis.mto.blog.domain.model.AccountStatus;
 import edu.iis.mto.blog.domain.model.User;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
 @RunWith(SpringRunner.class)
 @DataJpaTest
 public class UserRepositoryTest {
@@ -32,6 +35,7 @@ public class UserRepositoryTest {
     public void setUp() {
         user = new User();
         user.setFirstName("Jan");
+        user.setLastName("Kowalczykowski");
         user.setEmail("john@domain.com");
         user.setAccountStatus(AccountStatus.NEW);
     }
@@ -41,7 +45,7 @@ public class UserRepositoryTest {
 
         List<User> users = repository.findAll();
 
-        Assert.assertThat(users, Matchers.hasSize(0));
+        assertThat(users, Matchers.hasSize(0));
     }
 
     @Test
@@ -49,8 +53,8 @@ public class UserRepositoryTest {
         User persistedUser = entityManager.persist(user);
         List<User> users = repository.findAll();
 
-        Assert.assertThat(users, Matchers.hasSize(1));
-        Assert.assertThat(users.get(0).getEmail(), Matchers.equalTo(persistedUser.getEmail()));
+        assertThat(users, Matchers.hasSize(1));
+        assertThat(users.get(0).getEmail(), Matchers.equalTo(persistedUser.getEmail()));
     }
 
     @Test
@@ -58,7 +62,53 @@ public class UserRepositoryTest {
 
         User persistedUser = repository.save(user);
 
-        Assert.assertThat(persistedUser.getId(), Matchers.notNullValue());
+        assertThat(persistedUser.getId(), Matchers.notNullValue());
     }
 
+    @Test
+    public void shouldFindUserByHisName(){
+        String searchPattern = "Jan";
+        repository.save(user);
+        List<User> users = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(searchPattern,searchPattern,searchPattern);
+
+        assertThat(users.contains(user), is(true));
+    }
+
+    @Test
+    public void shouldFindUserByHisPartialName(){
+        String searchPattern = "Kowal";
+        repository.save(user);
+        List<User> users = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(searchPattern,searchPattern,searchPattern);
+
+        assertThat(users.contains(user), is(true));
+    }
+
+    @Test
+    public void shouldFindUserByHisEmail(){
+        String searchPattern = "john";
+        repository.save(user);
+        List<User> users = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(searchPattern,searchPattern,searchPattern);
+
+        assertThat(users.contains(user), is(true));
+    }
+
+    @Test
+    public void shouldNotFindUserThatDontExist(){
+        String searchPattern = "dudududu";
+        repository.save(user);
+        List<User> users = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(searchPattern,searchPattern,searchPattern);
+
+        assertThat(users.contains(user), is(false));
+    }
+
+    //not implemented
+    @Ignore
+    @Test
+    public void shouldNotFindUserByHisEmailDomain(){
+        String searchPattern = "domain";
+        repository.save(user);
+        List<User> users = repository.findByFirstNameContainingOrLastNameContainingOrEmailContainingAllIgnoreCase(searchPattern,searchPattern,searchPattern);
+
+        assertThat(users.contains(user), is(false));
+    }
 }
