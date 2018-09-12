@@ -101,7 +101,7 @@ public class UserRepositoryTest {
         assertThat(users.contains(user), is(false));
     }
 
-    //not implemented
+    //or should, need to ask client
     @Ignore
     @Test
     public void shouldNotFindUserByHisEmailDomain(){
