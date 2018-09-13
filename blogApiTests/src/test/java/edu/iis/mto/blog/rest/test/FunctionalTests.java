@@ -8,6 +8,7 @@ import com.jayway.restassured.RestAssured;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.core.Is.is;
 
 public class FunctionalTests {
 
@@ -67,6 +68,47 @@ public class FunctionalTests {
                 .body(jsonObject.toString()).expect().log().all().statusCode(200).when().post(USER_API + "/3/like/1");
         RestAssured.given().accept(ContentType.JSON).header("Content-Type", "application/json;charset=UTF-8").when()
                 .get(USER_API + "/1/post").then().body("likesCount", hasItem(1));
+    }
+
+    @Test
+    public void searchingUserPostsWithRemovedStatusShouldFail(){
+        JSONObject jsonObject = new JSONObject();
+        RestAssured.given().accept(ContentType.JSON).header("Content-Type", "application/json;charset=UTF-8")
+                .body(jsonObject.toString())
+                .expect().log().all().statusCode(404).when().get(USER_API + "/blog/user/4/post");
+    }
+    @Test
+    public void searchingPostsShouldReturnCorrectNumberOfLikes(){
+        JSONObject jsonObject = new JSONObject();
+        RestAssured.given().accept(ContentType.JSON).header("Content-Type", "application/json;charset=UTF-8")
+                .body(jsonObject.toString()).expect().log().all().statusCode(200).when().post(USER_API + "/3/like/1");
+        RestAssured.given().accept(ContentType.JSON).header("Content-Type", "application/json;charset=UTF-8")
+                .body(jsonObject.toString()).expect().log().all().statusCode(200).and()
+                .body("likesCount", hasItem(1)).when().get(USER_API + "/1/post").then();
+    }
+    @Test
+    public void searchingPostsShouldReturnCorrectNumberOfLikesWhenNoOneLikesIt(){
+        JSONObject jsonObject = new JSONObject();
+        RestAssured.given().accept(ContentType.JSON).header("Content-Type", "application/json;charset=UTF-8")
+                .body(jsonObject.toString()).expect().log().all().statusCode(200).and()
+                .body("likesCount", hasItem(0)).when().get(USER_API + "/1/post");
+    }
+
+    @Test
+    public void shouldReturnNothingWhenUserWithNoPostsIsProvided() {
+        JSONObject jsonObject = new JSONObject();
+        RestAssured.given().accept(ContentType.JSON).header("Content-Type", "application/json;charset=UTF-8")
+                .body(jsonObject.toString()).expect().log().all().statusCode(200).and().body("size()", is(0))
+                .when().get(USER_API + "/2/post");
+    }
+
+    @Test
+    public void searchingUserWithRemovedStatusShouldFail(){
+        JSONObject jsonObject = new JSONObject();
+        RestAssured.given().accept(ContentType.JSON).header("Content-Type", "application/json;charset=UTF-8")
+                .body(jsonObject.toString()).expect().log().all().statusCode(200).and()
+                .body("size()", is(0)).when()
+                .get(USER_API + "/find?searchString=konrad");
     }
 
 }
