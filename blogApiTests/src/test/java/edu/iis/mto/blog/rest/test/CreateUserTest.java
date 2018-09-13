@@ -17,4 +17,11 @@ public class CreateUserTest extends FunctionalTests {
         RestAssured.given().accept(ContentType.JSON).header("Content-Type", "application/json;charset=UTF-8")
                 .body(jsonObj.toString()).expect().log().all().statusCode(HttpStatus.SC_CREATED).when().post(USER_API);
     }
+
+    @Test
+    public void dataIntegrityViolationShouldGenerateConflict(){
+        JSONObject jsonObject = new JSONObject();
+        RestAssured.given().accept(ContentType.JSON).header("Content-Type", "application/json;charset=UTF-8").body(jsonObject.toString())
+                .expect().log().all().statusCode(409).when().post("blog/user");
+    }
 }
