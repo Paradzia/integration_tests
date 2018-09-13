@@ -33,4 +33,12 @@ public class CreateUserTest extends FunctionalTests {
                 .body(jsonObject.toString())
                 .expect().log().all().statusCode(404).when().get(USER_API + "/66");
     }
+
+    @Test
+    public void newUserMustHaveUniqueEmailAddress(){
+        JSONObject jsonObject = new JSONObject().put("email", "john@domain.com");
+        RestAssured.given().accept(ContentType.JSON).header("Content-Type", "application/json;charset=UTF-8")
+                .body(jsonObject.toString())
+                .expect().log().all().statusCode(409).when().post(USER_API);
+    }
 }
