@@ -21,7 +21,16 @@ public class CreateUserTest extends FunctionalTests {
     @Test
     public void dataIntegrityViolationShouldGenerateConflict(){
         JSONObject jsonObject = new JSONObject();
-        RestAssured.given().accept(ContentType.JSON).header("Content-Type", "application/json;charset=UTF-8").body(jsonObject.toString())
-                .expect().log().all().statusCode(409).when().post("blog/user");
+        RestAssured.given().accept(ContentType.JSON).header("Content-Type", "application/json;charset=UTF-8")
+                .body(jsonObject.toString())
+                .expect().log().all().statusCode(409).when().post(USER_API);
+    }
+
+    @Test
+    public void downloadingNotExistentUserDataShouldReturnNotFoundErrorCode(){
+        JSONObject jsonObject = new JSONObject();
+        RestAssured.given().accept(ContentType.JSON).header("Content-Type", "application/json;charset=UTF-8")
+                .body(jsonObject.toString())
+                .expect().log().all().statusCode(404).when().get(USER_API + "/66");
     }
 }

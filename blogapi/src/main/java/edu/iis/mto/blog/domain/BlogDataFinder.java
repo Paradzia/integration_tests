@@ -23,7 +23,7 @@ public class BlogDataFinder extends DomainService implements DataFinder {
     public UserData getUserData(Long userId) {
         User user = userRepository.findOne(userId);
         if (user == null) {
-            throw new EntityNotFoundException(String.format("user with id %1 does not exists", userId));
+            throw new EntityNotFoundException(String.format("user with id %d does not exists", userId));
         }
         return mapper.mapToDto(user);
     }
